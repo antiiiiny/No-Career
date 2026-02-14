@@ -48,7 +48,15 @@ export async function generatePlan(profile = {}){
 }
 
 export async function sendToWebhook(profile = {}, file = null){
-  const WEBHOOK_URL = 'https://aliciiaa.app.n8n.cloud/webhook-test/3ab792de-5657-43ed-b10e-eafb13bb4b20';
+  const WEBHOOK_URL = 'https://aliciiaa.app.n8n.cloud/webhook/3ab792de-5657-43ed-b10e-eafb13bb4b20';
+
+  function isPlanLike(obj){
+    if (!obj || typeof obj !== 'object') return false;
+    if (typeof obj.readinessScore === 'number') return true;
+    if (Array.isArray(obj.roadmap) && obj.roadmap.length > 0) return true;
+    return false;
+  }
+
   try {
     const form = new FormData();
     form.append('dreamRole', profile.dreamRole || '');
@@ -60,13 +68,21 @@ export async function sendToWebhook(profile = {}, file = null){
 
     const resp = await fetch(WEBHOOK_URL, { method: 'POST', body: form });
     if (!resp.ok) throw new Error(`Webhook responded with ${resp.status}`);
-    const ct = resp.headers.get('content-type') || '';
-    if (ct.includes('application/json')) return await resp.json();
-    return await resp.text();
+
+    const ct = (resp.headers.get('content-type') || '').toLowerCase();
+    if (ct.includes('application/json')){
+      const data = await resp.json();
+      return isPlanLike(data) ? data : null; // return plan-like object or null (fallback)
+    }
+
+    // non-JSON responses — return raw text (caller will fallback)
+    const text = await resp.text();
+    return null;
   } catch (err) {
     console.warn('sendToWebhook error', err);
     throw err;
   }
+}
 
 // Simulate progress globally — returns updated plan object (also persists to localStorage)
 export async function simulateProgress(completionPercent = 0){
