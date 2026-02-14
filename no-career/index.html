@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>NoCareer — Onboarding</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <img src="assets/logo.svg" class="logo" alt="NoCareer logo" />
+        <nav class="nav-muted">
+          <a href="dashboard.html" id="skipToDashboard">Open dashboard</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="card onboarding-card" aria-labelledby="onboardTitle">
+        <h2 id="onboardTitle">Get your 30‑day plan</h2>
+        <p class="muted">Tell us about your dream role and weekly availability. We'll generate a targeted 30‑day roadmap.</p>
+
+        <form id="onboardingForm" novalidate>
+          <div class="form-row">
+            <label for="dreamRole">Dream Role</label>
+            <input id="dreamRole" name="dreamRole" type="text" required placeholder="e.g. Frontend Engineer" />
+          </div>
+
+          <div class="form-row two-up">
+            <div>
+              <label for="hoursPerWeek">Hours per week</label>
+              <input id="hoursPerWeek" name="hoursPerWeek" type="number" required min="1" max="168" value="10" />
+            </div>
+            <div>
+              <label for="experienceLevel">Experience level</label>
+              <select id="experienceLevel" name="experienceLevel" required>
+                <option value="beginner">Beginner (0–2 yrs)</option>
+                <option value="intermediate" selected>Intermediate (2–5 yrs)</option>
+                <option value="advanced">Advanced (5+ yrs)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label for="resumeText">Resume / Summary (paste text)</label>
+            <textarea id="resumeText" name="resumeText" rows="6" placeholder="Paste your resume or a short summary..."></textarea>
+          </div>
+
+          <div class="form-row actions">
+            <button id="startPlanBtn" class="btn primary" type="submit">Start Plan</button>
+            <div id="onboardLoading" class="loading hidden" role="status" aria-live="polite">
+              <div class="spinner" aria-hidden="true"></div>
+              <div class="loading-text">Analyzing Market Demand...</div>
+            </div>
+          </div>
+        </form>
+
+        <p class="muted small">By continuing you agree to an offline, privacy-first plan generated locally in your browser.</p>
+      </section>
+
+      <aside class="card card-ghost info-card" aria-hidden="true">
+        <h3>What you’ll get</h3>
+        <ul>
+          <li>Personalized readiness score</li>
+          <li>Skill gap analysis</li>
+          <li>4‑week roadmap with mini projects</li>
+          <li>Weekly progress simulation</li>
+        </ul>
+      </aside>
+    </main>
+
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>

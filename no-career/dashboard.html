@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>NoCareer — Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <img src="assets/logo.svg" class="logo" alt="NoCareer logo" />
+        <div class="header-actions">
+          <button id="resetPlanBtn" class="btn ghost">Reset plan</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container dashboard-grid">
+      <section class="card header-card" aria-labelledby="roleTitle">
+        <div class="header-top">
+          <h2 id="dreamRoleTitle">Your plan</h2>
+          <div class="readiness">
+            <div class="readiness-meta">
+              <div class="label">Readiness</div>
+              <div id="readinessScore" class="readiness-score" aria-live="polite">—</div>
+            </div>
+            <div class="progress" id="readinessProgress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <div class="progress-fill" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="skillsTitle">
+        <h3 id="skillsTitle">Skill gap analysis</h3>
+        <div class="skills-grid">
+          <div>
+            <h4>Existing skills</h4>
+            <ul id="skillGapExisting" class="skill-list"></ul>
+          </div>
+          <div>
+            <h4>Missing skills</h4>
+            <ul id="skillGapMissing" class="skill-list missing"></ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="roadmapTitle">
+        <h3 id="roadmapTitle">30‑Day Roadmap</h3>
+        <div id="roadmapContainer" class="roadmap-grid"></div>
+      </section>
+
+      <section class="card" aria-labelledby="simulateTitle">
+        <h3 id="simulateTitle">Weekly simulation</h3>
+        <p class="muted">Simulate a week's completion to see impact on readiness and skill strengths.</p>
+        <div class="sim-controls">
+          <input id="simulationSlider" type="range" min="0" max="100" value="0" step="1" aria-label="Simulation completion percentage" />
+          <div class="sim-info">
+            <div id="simulationValue">0%</div>
+            <button id="simulateBtn" class="btn primary">Simulate Progress</button>
+          </div>
+        </div>
+        <div id="loadingMessage" class="muted small"></div>
+      </section>
+    </main>
+
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>
