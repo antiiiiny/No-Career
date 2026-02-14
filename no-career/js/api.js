@@ -72,11 +72,17 @@ export async function sendToWebhook(profile = {}, file = null){
     const ct = (resp.headers.get('content-type') || '').toLowerCase();
     if (ct.includes('application/json')){
       const data = await resp.json();
-      return isPlanLike(data) ? data : null; // return plan-like object or null (fallback)
+      // handle common n8n response shapes: direct plan, { output: plan }, or [{ output: plan }]
+      if (isPlanLike(data)) return data;
+      if (data && typeof data === 'object' && isPlanLike(data.output)) return data.output;
+      if (Array.isArray(data) && data.length > 0){
+        const candidate = data[0].output || data[0].data || data[0];
+        if (isPlanLike(candidate)) return candidate;
+      }
+      return null; // not a plan-like response
     }
 
-    // non-JSON responses — return raw text (caller will fallback)
-    const text = await resp.text();
+    // non-JSON responses — return null so caller falls back to local generation
     return null;
   } catch (err) {
     console.warn('sendToWebhook error', err);
