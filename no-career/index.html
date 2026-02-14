@@ -47,6 +47,12 @@
             <textarea id="resumeText" name="resumeText" rows="6" placeholder="Paste your resume or a short summary..."></textarea>
           </div>
 
+          <div class="form-row">
+            <label for="resumePdf">Attach resume PDF (optional)</label>
+            <input id="resumePdf" name="resumePdf" type="file" accept="application/pdf" />
+            <div id="resumeFileNote" class="muted small">PDF will be uploaded to the workflow if provided (optional).</div>
+          </div>
+
           <div class="form-row actions">
             <button id="startPlanBtn" class="btn primary" type="submit">Start Plan</button>
             <div id="onboardLoading" class="loading hidden" role="status" aria-live="polite">

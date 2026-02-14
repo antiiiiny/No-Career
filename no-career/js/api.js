@@ -47,6 +47,27 @@ export async function generatePlan(profile = {}){
   return _clone(plan);
 }
 
+export async function sendToWebhook(profile = {}, file = null){
+  const WEBHOOK_URL = 'https://aliciiaa.app.n8n.cloud/webhook-test/3ab792de-5657-43ed-b10e-eafb13bb4b20';
+  try {
+    const form = new FormData();
+    form.append('dreamRole', profile.dreamRole || '');
+    form.append('experienceLevel', profile.experienceLevel || '');
+    form.append('hoursPerWeek', profile.hoursPerWeek || 0);
+    form.append('existingSkills', JSON.stringify(profile.existingSkills || []));
+    form.append('missingSkills', JSON.stringify(profile.missingSkills || []));
+    if (file) form.append('resumePdf', file, file.name);
+
+    const resp = await fetch(WEBHOOK_URL, { method: 'POST', body: form });
+    if (!resp.ok) throw new Error(`Webhook responded with ${resp.status}`);
+    const ct = resp.headers.get('content-type') || '';
+    if (ct.includes('application/json')) return await resp.json();
+    return await resp.text();
+  } catch (err) {
+    console.warn('sendToWebhook error', err);
+    throw err;
+  }
+
 // Simulate progress globally — returns updated plan object (also persists to localStorage)
 export async function simulateProgress(completionPercent = 0){
   // read stored plan
