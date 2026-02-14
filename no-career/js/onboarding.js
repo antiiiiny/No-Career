@@ -52,36 +52,37 @@ export function initOnboarding(){
       const profile = { dreamRole, hoursPerWeek: hours, experienceLevel, resumeText };
       const resumeFile = (document.querySelector('#resumePdf')?.files || [])[0] || null;
 
-      // if a PDF is attached, attempt to POST to the n8n webhook (graceful fallback)
-      if (resumeFile) {
-        if (resumeFile.type !== 'application/pdf') {
-          alert('Please attach a PDF file for your resume.');
-          submitBtn.disabled = false; loading.classList.add('hidden'); return;
-        }
-        if (resumeFile.size > 5 * 1024 * 1024) {
-          alert('Resume PDF must be smaller than 5MB.');
-          submitBtn.disabled = false; loading.classList.add('hidden'); return;
+      // attempt server-side plan via webhook first (includes optional PDF); fallback to local generator
+      loadingText.textContent = 'Checking server plan...';
+      await _sleep(300);
+      try {
+        // validate file if present
+        if (resumeFile) {
+          if (resumeFile.type !== 'application/pdf') {
+            alert('Please attach a PDF file for your resume.');
+            submitBtn.disabled = false; loading.classList.add('hidden'); return;
+          }
+          if (resumeFile.size > 5 * 1024 * 1024) {
+            alert('Resume PDF must be smaller than 5MB.');
+            submitBtn.disabled = false; loading.classList.add('hidden'); return;
+          }
         }
 
-n        loadingText.textContent = 'Uploading resume...';
-        await _sleep(400);
-        try {
-          const webhookResp = await sendToWebhook(profile, resumeFile);
-          // if webhook returns a plan-like object, use it
-          if (webhookResp && typeof webhookResp === 'object' && (webhookResp.readinessScore !== undefined || webhookResp.roadmap !== undefined)) {
-            const plan = webhookResp;
-            plan.meta = plan.meta || {};
-            plan.meta.profile = profile;
-            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(plan)); } catch(e){}
-            loadingText.textContent = 'Plan received — redirecting...';
-            await _sleep(600);
-            window.location.href = 'dashboard.html';
-            return;
-          }
-          // otherwise continue to local generation
-        } catch (weErr) {
-          console.warn('Webhook failed — continuing locally', weErr);
+        const webhookResp = await sendToWebhook(profile, resumeFile);
+        console.debug('sendToWebhook response', webhookResp);
+        if (webhookResp && typeof webhookResp === 'object' && (webhookResp.readinessScore !== undefined || webhookResp.roadmap !== undefined)) {
+          const plan = webhookResp;
+          plan.meta = plan.meta || {};
+          plan.meta.profile = profile;
+          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(plan)); } catch(e){}
+          loadingText.textContent = 'Server plan received — redirecting...';
+          await _sleep(600);
+          window.location.href = 'dashboard.html';
+          return;
         }
+      } catch (weErr) {
+        // non-fatal: log and continue to local generation
+        console.warn('Webhook failed or returned no plan; falling back to local plan', weErr);
       }
 
       // fallback/local generation
